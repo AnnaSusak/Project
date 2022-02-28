@@ -56,6 +56,7 @@ def index():
 
 @app.post('/login')
 def login(username: str = Body(...), password: str = Body(...)):
+    add_to_db(username, password)
     return db_action(
         '''
             select * from users where username = ? and password = ?
@@ -72,6 +73,17 @@ def test():
             insert into users (username, password) values ('test', 'password')
         ''',
         (),
+        DBAction.commit,
+    )
+
+
+
+def add_to_db(name: str, password: str):
+    return db_action(
+        '''
+            insert into users (username, password) values (?, ?)
+        ''',
+        (name, password),
         DBAction.commit,
     )
 

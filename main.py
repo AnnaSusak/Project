@@ -67,9 +67,20 @@ def login(username: str = Body(...), password: str = Body(...)):
 
 @app.post('/add_to_db')
 def add_to_db(name: str = Body(...), password: str = Body(...)):
+    user=db_action(
+        '''
+            select * from users where username = ?
+        ''',
+        (name, ),
+        DBAction.fetchone,
+    )
+    if user:
+        return{
+            'error':'Пользователь уже существует'
+        }
     return db_action(
         '''
-            insert into users (username, password) values (?, ?)
+            insert into users (username, password) values (?, ?),  
         ''',
         (name, password),
         DBAction.commit,

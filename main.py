@@ -66,7 +66,7 @@ def login(username: str = Body(...), password: str = Body(...)):
 
 
 @app.post('/add_to_db')
-def add_to_db(name: str, password: str):
+def add_to_db(name: str = Body(...), password: str = Body(...)):
     return db_action(
         '''
             insert into users (username, password) values (?, ?)

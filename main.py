@@ -75,7 +75,7 @@ def index():
         return HTMLResponse(f.read())
 
 
-@app.get('/register')
+@app.get('/reg')
 def register():
     with open('register.html', 'r', encoding='utf-8') as f:
         return HTMLResponse(f.read())
@@ -111,23 +111,18 @@ def add_to_db(name: str = Body(...), password: str = Body(...)):
     if user:
         raise HTTPException(status_code=400, detail='Пользователь уже существует')
         return {'error': 'Пользователь уже существует'}
-    #user=
-    '''print('type', type(db_action(
-        '''
-          # insert into users (username, password) values (?, ?),
-    ''',
-        (name, password),
-        DBAction.commit,
-    )))'''
-    #print(user.name)
-    #token = jwt.encode({'id': user[0]}, config.SECRET, algorithm='HS256')
-    return db_action(
+    
+
+    db_action(
         '''
             insert into users (username, password) values (?, ?),  
         ''',
         (name, password),
         DBAction.commit,
     )
+    return {
+        'message':'Регистрация успешна'
+    }
 
 
 if __name__ == '__main__':

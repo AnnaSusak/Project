@@ -69,19 +69,22 @@ def get_user(authorization: str = Header(...)):
     return user[1]
 
 
-@app.get('/')
-def index():
-    with open('index.html', 'r', encoding='utf-8') as f:
+def send_html(name: str):
+    with open(f'html/{name}.html', 'r', encoding='utf-8') as f:
         return HTMLResponse(f.read())
 
 
-@app.get('/reg')
-def register():
-    with open('register.html', 'r', encoding='utf-8') as f:
-        return HTMLResponse(f.read())
+@app.get('/login')
+def login_page():
+    return send_html('login')
 
 
-@app.post('/login')
+@app.get('/register')
+def register_page():
+    return send_html('register')
+
+
+@app.post('/api/login')
 def login(username: str = Body(...), password: str = Body(...)):
     user = db_action(
         '''
@@ -92,36 +95,34 @@ def login(username: str = Body(...), password: str = Body(...)):
     )
     if not user:
         raise HTTPException(status_code=404, detail='Пользователь не найден')
-        return {'error': 'Пользователь не найден'}
+
     token = jwt.encode({'id': user[0]}, config.SECRET, algorithm='HS256')
     return {
         'token': token
     }
 
 
-@app.post('/add_to_db')
-def add_to_db(name: str = Body(...), password: str = Body(...)):
+@app.post('/api/register')
+def add_to_db(username: str = Body(...), password: str = Body(...)):
     user = db_action(
         '''
             select * from users where username = ?
         ''',
-        (name,),
+        (username,),
         DBAction.fetchone,
     )
     if user:
         raise HTTPException(status_code=400, detail='Пользователь уже существует')
-        return {'error': 'Пользователь уже существует'}
-    
 
     db_action(
         '''
             insert into users (username, password) values (?, ?),  
         ''',
-        (name, password),
+        (username, password),
         DBAction.commit,
     )
     return {
-        'message':'Регистрация успешна'
+        'message': 'Регистрация успешна'
     }
 
 

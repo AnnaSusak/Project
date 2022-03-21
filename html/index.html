@@ -7,7 +7,10 @@
 <body>
     <input type="text" id="login">
     <input type="text" id="password">
-    <button id="do_register" type="button" onclick="submit_form()">Зарегистрироваться</button>
+    <button id="do_login" type="button" onclick="submit_form()">
+        Войти
+    </button>
+
     <script>
         async function submit_form() {
             let login = document.getElementById('login')
@@ -15,7 +18,7 @@
             let password = document.getElementById('password')
             console.log(password.value)
 
-            let resp = await fetch('/add_to_db', {
+            let resp = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -28,7 +31,6 @@
             let data = await resp.json()
             console.log(data)
         }
-
     </script>
 </body>
 </html>

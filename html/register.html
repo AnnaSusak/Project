@@ -7,6 +7,7 @@
 <body>
     <input type="text" id="login">
     <input type="text" id="password">
+    <input type="text" id="password_confirm">
     <button id="do_register" type="button" onclick="submit_form()">Зарегистрироваться</button>
     <script>
         async function submit_form() {
@@ -14,8 +15,15 @@
             console.log(login.value)
             let password = document.getElementById('password')
             console.log(password.value)
+            let password_conf=document.getElementById('password_confirm')
+            console.log(password_conf.value)
 
-            let resp = await fetch('/api/register', {
+            if (password.value!=password_conf.value){
+                console.log('Пароли не совпадают')
+                return
+            }
+            else{
+                let resp = await fetch('/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -23,10 +31,12 @@
                 body: JSON.stringify({
                     username: login.value,
                     password: password.value,
+                    })
                 })
-            })
-            let data = await resp.json()
-            console.log(data)
+                let data = await resp.json()
+                console.log(data)
+            }
+
         }
     </script>
 </body>

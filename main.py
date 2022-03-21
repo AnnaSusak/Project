@@ -3,7 +3,7 @@ from enum import Enum, auto
 
 import jose.exceptions
 import uvicorn
-from fastapi import FastAPI, Body, Header
+from fastapi import FastAPI, Body, Header, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.responses import HTMLResponse
 from jose import jwt
@@ -82,6 +82,19 @@ def send_html(name: str):
 @app.get('/login')
 def login_page():
     return send_html('login')
+
+
+@app.get('/')
+def index():
+    return send_html('index')
+
+
+@app.get('/api/ping')
+def ping(user: list = Depends(get_user)):
+    return {
+        'response': 'Pong',
+        'username': user[1],
+    }
 
 
 @app.get('/register')

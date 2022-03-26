@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Сайт</title>
 </head>
 <body>
-    <script>
+<script>
         async function main(){
             let token=localStorage.getItem('token')
-            let resp = await fetch('/api/login', {
+            let resp = await fetch('/api/ping', {
                     headers: {
                         'Authorization': token,
                     },
@@ -17,6 +17,7 @@
             console.log(data)
         }
         main()
-    </script>
+
+</script>
 </body>
 </html>

@@ -5,11 +5,11 @@
     <title>Регистрастрация</title>
 </head>
 <body>
-    <input type="text" id="login">
-    <input type="text" id="password">
-    <input type="text" id="password_confirm">
-    <button id="do_register" type="button" onclick="submit_form()">Зарегистрироваться</button>
-    <script>
+<input type="text" id="login">
+<input type="text" id="password">
+<input type="text" id="password_confirm">
+<button id="do_register" type="button" onclick="submit_form()">Зарегистрироваться</button>
+<script>
         async function submit_form() {
             let login = document.getElementById('login')
             console.log(login.value)
@@ -22,8 +22,7 @@
                 console.log('Пароли не совпадают')
                 return
             }
-            else{
-                let response = await fetch('/api/register', {
+            let response = await fetch('/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -39,13 +38,13 @@
                     return
                 }
                 if(response.status!=200){
-                    alert(data['Ошибка'])
+                    alert('Ошибка')
                     return
                 }
                 window.location='/login'
-            }
 
         }
-    </script>
+
+</script>
 </body>
 </html>

@@ -5,34 +5,42 @@
     <title>Крутой сайт</title>
 </head>
 <body>
-    <input type="text" id="login">
-    <input type="text" id="password">
-    <button id="do_login" type="button" onclick="submit_form()">
-        Войти
-    </button>
+<input type="text" id="login">
+<input type="text" id="password">
+<button id="do_login" type="button" onclick="submit_form()">
+    Войти
+</button>
 
-    <script>
-        async function submit_form() {
-            let login = document.getElementById('login')
-            console.log(login.value)
-            let password = document.getElementById('password')
-            console.log(password.value)
+<script>
+    async function submit_form() {
+        let login = document.getElementById('login')
+        console.log(login.value)
+        let password = document.getElementById('password')
+        console.log(password.value)
 
-            let resp = await fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: login.value,
-                    password: password.value,
-                })
+        let resp = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: login.value,
+                password: password.value,
             })
-            let data = await resp.json()
-            let token=data['token']
-            localStorage.setItem('token', token)
-            window.location='/'
+        })
+        let data = await resp.json()
+        if (resp.status == 404) {
+            alert(data['message'])
+            return
         }
-    </script>
+        if (resp.status != 200) {
+            alert('Ошибка')
+            return
+        }
+        let token = data['token']
+        localStorage.setItem('token', token)
+        window.location = '/'
+    }
+</script>
 </body>
 </html>

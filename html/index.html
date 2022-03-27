@@ -6,17 +6,18 @@
 </head>
 <body>
 <script>
-        async function main(){
-            let token=localStorage.getItem('token')
-            let resp = await fetch('/api/ping', {
-                    headers: {
-                        'Authorization': token,
-                    },
-            })
-            let data=await resp.json()
-            console.log(data)
-        }
-        main()
+    async function main() {
+        let token = localStorage.getItem('token')
+        let resp = await fetch('/api/ping', {
+            headers: {
+                'Authorization': token,
+            },
+        })
+        let data = await resp.json()
+        console.log(data)
+    }
+
+    main()
 
 </script>
 </body>

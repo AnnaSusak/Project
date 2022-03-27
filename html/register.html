@@ -10,40 +10,40 @@
 <input type="text" id="password_confirm">
 <button id="do_register" type="button" onclick="submit_form()">Зарегистрироваться</button>
 <script>
-        async function submit_form() {
-            let login = document.getElementById('login')
-            console.log(login.value)
-            let password = document.getElementById('password')
-            console.log(password.value)
-            let password_conf=document.getElementById('password_confirm')
-            console.log(password_conf.value)
+    async function submit_form() {
+        let login = document.getElementById('login')
+        console.log(login.value)
+        let password = document.getElementById('password')
+        console.log(password.value)
+        let password_conf = document.getElementById('password_confirm')
+        console.log(password_conf.value)
 
-            if (password.value!=password_conf.value){
-                console.log('Пароли не совпадают')
-                return
-            }
-            let response = await fetch('/api/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: login.value,
-                    password: password.value,
-                    })
-                })
-                let data = await response.json()
-                if(response.status==400){
-                    alert(data['message'])
-                    return
-                }
-                if(response.status!=200){
-                    alert('Ошибка')
-                    return
-                }
-                window.location='/login'
-
+        if (password.value != password_conf.value) {
+            alert('Пароли не совпадают')
+            return
         }
+        let response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: login.value,
+                password: password.value,
+            })
+        })
+        let data = await response.json()
+        if (response.status == 400) {
+            alert(data['message'])
+            return
+        }
+        if (response.status != 200) {
+            alert('Ошибка')
+            return
+        }
+        window.location = '/login'
+
+    }
 
 </script>
 </body>

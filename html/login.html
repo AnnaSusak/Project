@@ -30,7 +30,7 @@
         })
         let data = await resp.json()
         if (resp.status == 404) {
-            alert(data['message'])
+            alert(data['detail'])
             return
         }
         if (resp.status != 200) {

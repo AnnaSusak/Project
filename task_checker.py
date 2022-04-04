@@ -1,4 +1,4 @@
-from utils import db_action, DBAction
+from utils import db_action, DBAction, run_code
 
 
 class Task:
@@ -22,15 +22,51 @@ class Task:
             DBAction.commit,
         )
 
+    @staticmethod
+    def create(name: str, description: str, output: str) -> 'Task':
+        task_id = db_action(
+            '''
+             insert into tasks (name, description, output) values(?,?,?)
+            ''',
+            (name, description, output),
+            DBAction.commit,
+        )
+        task = Task(task_id, name, description, output)
+        return task
 
-def get_task(task_id: int) -> Task:
-    db_task = db_action(
-        '''
-        select * from tasks where id=?
-        ''',
-        (task_id,),
-        DBAction.fetchone
-    )
+    @staticmethod
+    def get(task_id: int) -> 'Optional[Task]':
+        db_task = db_action(
+            '''
+            select * from tasks where id=?
+            ''',
+            (task_id,),
+            DBAction.fetchone
+        )
+        if db_task is None:
+            return None
+        task = Task(db_task[0], db_task[1], db_task[2], db_task[3])
+        return task
 
-    task = Task(db_task[0], db_task[1], db_task[2], db_task[3])
-    return task
+    @staticmethod
+    def all():
+        db_tasks = db_task = db_action(
+            '''
+            select * from tasks
+            ''',
+            (),
+            DBAction.fetchall,
+        )
+        tasks = []
+        for db_task in db_tasks:
+            tasks.append(db_task[0], db_task[1], db_task[2], db_task[3])
+        return tasks
+
+    def check_solution(self, code: str) -> bool:
+        output = run_code(code)
+        output = output.replace('\r', '')
+        if output[-1] == '\n':
+            output = output[:-1]
+        print(repr(output))
+        print(repr(self.output))
+        return output == self.output

@@ -3,7 +3,7 @@ import sqlite3
 import string
 import subprocess
 from enum import Enum, auto
-from task_checker import Task, get_task
+from task_checker import Task
 import jose.exceptions
 import uvicorn
 import random
@@ -37,20 +37,10 @@ def create_db():
                 output varchar not null
             );
     ''')
-    task = get_task(1)
+    task = Task.get(1)
     print(task.description)
     cursor.close()
     conn.close()
-
-
-@app.on_event('startup')
-def test():
-    task = get_task(2)
-    print(task.description)
-    task.description = 'task'
-    task.save()
-    task = get_task(2)
-    print(task.description)
 
 
 def get_user(authorization: str = Header(...)):
@@ -154,6 +144,18 @@ def register(username: str = Body(...), password: str = Body(...)):
     return {
         'message': 'Успешная регистрация'
     }
+
+
+@app.get('/api/tasks')
+def get_tasks(user: list = Depends(get_user), ):
+    return Task.all()
+
+
+# для теста можно убрать пользователя
+@app.post('/api/send_task')
+def send_task(user: list = Depends(get_user), task_id: int = Body(..., embed=True),
+              code: str = Body(..., embed=True)) -> bool:
+    return
 
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@ def run_code(code: str):
         f.write(code)
     process = subprocess.Popen(['python', filename], stdout=subprocess.PIPE)
     process.wait()
-    stdout = process.stdout.read()
+    stdout = process.stdout.read().decode()
     print(stdout)
     os.remove(filename)
     return stdout
@@ -36,7 +36,7 @@ def db_action(sql: str, args: tuple, action: DBAction):
         result = cursor.fetchall()
     elif action == DBAction.commit:
         conn.commit()
-        result = None
+        result = cursor.lastrowid
 
     cursor.close()
     conn.close()

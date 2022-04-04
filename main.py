@@ -43,6 +43,16 @@ def create_db():
     conn.close()
 
 
+@app.on_event('startup')
+def test():
+    task = get_task(2)
+    print(task.description)
+    task.description = 'task'
+    task.save()
+    task = get_task(2)
+    print(task.description)
+
+
 def get_user(authorization: str = Header(...)):
     try:
         user_id = jwt.decode(authorization, config.SECRET, algorithms=['HS256'])['id']

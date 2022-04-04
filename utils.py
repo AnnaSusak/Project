@@ -20,9 +20,9 @@ def run_code(code: str):
 
 
 class DBAction(Enum):
-    fetchone = auto()
-    fetchall = auto()
-    commit = auto()
+    fetchone = auto()  # получить одну строку результат
+    fetchall = auto()  # получить все строки результата
+    commit = auto()  # сохранить
 
 
 def db_action(sql: str, args: tuple, action: DBAction):

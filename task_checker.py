@@ -13,13 +13,13 @@ class Task:
         self.description = description
         self.output = output
 
-    def save(self, name_val: str, description_val: str, output_val: str):
+    def save(self, id: int, name_val: str, description_val: str, output_val: str):
         db_action(
             '''
             update tasks set name=?, description=?, output=? where id=?
             ''',
-            (name_val, description_val, output_val, self.id),
-            DBAction.fetchone
+            (name_val, description_val, output_val, id),
+            DBAction.commit,
         )
 
 

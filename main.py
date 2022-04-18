@@ -1,18 +1,15 @@
-import os
 import sqlite3
-import string
-import subprocess
-from enum import Enum, auto
-from task_checker import Task
+
 import jose.exceptions
 import uvicorn
-import random
 from fastapi import FastAPI, Body, Header, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.responses import HTMLResponse
 from jose import jwt
-from utils import db_action, run_code, DBAction
+
 import config
+from task_checker import Task
+from utils import db_action, DBAction, run_code
 
 app = FastAPI()
 
@@ -31,14 +28,13 @@ def create_db():
     ''')
     cursor.execute('''
         create table if not exists tasks (
-                id integer primary key,
-                name varchar not null,
-                description varchar,
-                output varchar not null
-            );
+            id integer primary key,
+            name varchar not null,
+            description varchar,
+            output varchar not null
+        );
     ''')
-    task = Task.get(1)
-    print(task.description)
+
     cursor.close()
     conn.close()
 
@@ -67,14 +63,24 @@ def send_html(name: str):
         return HTMLResponse(f.read())
 
 
+@app.get('/')
+def index():
+    return send_html('index')
+
+
+@app.get('/tasks')
+def tasks():
+    return send_html('tasks')
+
+
 @app.get('/login')
 def login_page():
     return send_html('login')
 
 
-@app.get('/')
-def index():
-    return send_html('index')
+@app.get('/register')
+def register_page():
+    return send_html('register')
 
 
 @app.get('/api/ping')
@@ -86,15 +92,13 @@ def ping(user: list = Depends(get_user)):
 
 
 @app.post('/api/execute')
-def execute(user: list = Depends(get_user), code: str = Body(..., embed=True)):
+def execute(
+        user: list = Depends(get_user),
+        code: str = Body(..., embed=True),
+):
     return {
         'result': run_code(code),
     }
-
-
-@app.get('/register')
-def register_page():
-    return send_html('register')
 
 
 @app.post('/api/login')
@@ -147,15 +151,23 @@ def register(username: str = Body(...), password: str = Body(...)):
 
 
 @app.get('/api/tasks')
-def get_tasks(user: list = Depends(get_user), ):
+def get_tasks(
+        user: list = Depends(get_user),
+):
     return Task.all()
 
 
-# для теста можно убрать пользователя
 @app.post('/api/send_task')
-def send_task(user: list = Depends(get_user), task_id: int = Body(..., embed=True),
-              code: str = Body(..., embed=True)) -> bool:
-    return
+def send_task(
+    user: list = Depends(get_user),
+    task_id: int = Body(..., embed=True),
+    code: str = Body(..., embed=True),
+):
+    task = Task.get(task_id)
+    result = task.check_solution(code)
+    return {
+        'result': result
+    }
 
 
 if __name__ == '__main__':

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from utils import db_action, DBAction, run_code
 
 
@@ -13,20 +15,11 @@ class Task:
         self.description = description
         self.output = output
 
-    def save(self):
-        db_action(
-            '''
-            update tasks set name=?, description=?, output=? where id=?
-            ''',
-            (self.name, self.description, self.output, self.id),
-            DBAction.commit,
-        )
-
     @staticmethod
     def create(name: str, description: str, output: str) -> 'Task':
         task_id = db_action(
             '''
-             insert into tasks (name, description, output) values(?,?,?)
+                insert into tasks (name, description, output) values (?, ?, ?)
             ''',
             (name, description, output),
             DBAction.commit,
@@ -34,32 +27,44 @@ class Task:
         task = Task(task_id, name, description, output)
         return task
 
+    def save(self):
+        db_action(
+            '''
+                update tasks set name = ?, description = ?, output = ? where id = ?
+            ''',
+            (self.name, self.description, self.output, self.id),
+            DBAction.commit,
+        )
+
     @staticmethod
     def get(task_id: int) -> 'Optional[Task]':
         db_task = db_action(
             '''
-            select * from tasks where id=?
+                select * from tasks where id = ?
             ''',
             (task_id,),
-            DBAction.fetchone
+            DBAction.fetchone,
         )
+
         if db_task is None:
             return None
+
         task = Task(db_task[0], db_task[1], db_task[2], db_task[3])
         return task
 
     @staticmethod
-    def all():
-        db_tasks = db_task = db_action(
+    def all() -> 'list[Task]':
+        db_tasks = db_action(
             '''
-            select * from tasks
+                select * from tasks
             ''',
             (),
             DBAction.fetchall,
         )
+
         tasks = []
         for db_task in db_tasks:
-            tasks.append(db_task[0], db_task[1], db_task[2], db_task[3])
+            tasks.append(Task(db_task[0], db_task[1], db_task[2], db_task[3]))
         return tasks
 
     def check_solution(self, code: str) -> bool:
@@ -67,6 +72,4 @@ class Task:
         output = output.replace('\r', '')
         if output[-1] == '\n':
             output = output[:-1]
-        print(repr(output))
-        print(repr(self.output))
         return output == self.output
